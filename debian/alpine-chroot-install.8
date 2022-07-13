@@ -1,0 +1,94 @@
+.TH alpine-chroot-install 8 "2022-07-22" "Alpine Linux"
+.SH NAME
+alpine-chroot-install \- bootstrap an Alpine Linux chroot
+.SH SYNOPSIS
+.B alpine-chroot-install
+.B -d
+.I /directory
+.RI [ options ]
+.SH DESCRIPTION
+This script installs Alpine Linux into a chroot and optionally sets up
+qemu-user and binfmt to emulate different architecture (e.g. armhf).
+.SH OPTIONS AND ENVIRONMENT VARIABLES
+.TP
+.B -a ARCH
+CPU architecture for the chroot. If not set, then it's
+the same as the host's architecture. If it's different
+from the host's architecture, then it will be emulated
+using qemu-user. Options: x86_64, x86, aarch64, armhf,
+armv7, ppc64le, riscv64, s390x.
+.TP
+.B -b ALPINE_BRANCH
+Alpine branch to install (default is latest-stable).
+.TP
+.B -d CHROOT_DIR
+Absolute path to the directory where Alpine chroot
+should be installed (default is /alpine).
+.TP
+.B -i BIND_DIR
+Absolute path to the directory on the host system that
+should be mounted on the same path inside the chroot
+(default is PWD, if it's under /home, or none).
+.TP
+.B -k CHROOT_KEEP_VARS
+Names of the environment variables to pass from the
+host environment into chroot by the enter-chroot
+script. Name may be an extended regular expression.
+Default: ARCH CI QEMU_EMULATOR TRAVIS_.*.
+.TP
+.B -m ALPINE_MIRROR
+URI of the Aports mirror to fetch packages from
+(default is http://dl-cdn.alpinelinux.org/alpine).
+.TP
+.B -p ALPINE_PACKAGES
+Alpine packages to install into the chroot (default is
+build-base ca-certificates ssl_client).
+.TP
+.B -r EXTRA_REPOS
+Alpine repositories to be added to
+/etc/apk/repositories (main and community from
+$ALPINE_MIRROR are always added).
+.TP
+.B -t TEMP_DIR
+Absolute path to the directory where to store temporary
+files (defaults to `mktemp -d`).
+.TP
+.B -h
+Show this help message and exit.
+.TP
+.B -v
+Print version and exit.
+.TP
+.B APK_TOOLS_URI
+URL of apk.static to download. Default is x86_64
+binary from
+https://gitlab.alpinelinux.org/alpine/apk-tools/-/packages.
+.TP
+.B APK_TOOLS_SHA256
+SHA-256 checksum of $APK_TOOLS_URI.
+.PP
+Each option can be also provided by environment variable. If both option and
+variable is specified and the option accepts only one argument, then the
+option takes precedence.
+
+.SH AFTER INSTALL
+This tool also creates script "enter-chroot" inside the chroot directory, that may
+be used to enter the chroot environment. That script do the following:
+.IP
+1. saves environment variables specified by $CHROOT_KEEP_VARS and PWD,
+
+2. chroots into $CHROOT_DIR,
+
+3. starts clean environment using "env -i",
+
+4. switches user and simulates full login using "su -l",
+
+5. loads saved environment variables and changes directory to saved PWD,
+
+6. executes specified command or "sh" if not provided.
+.PP
+Example:
+.EX
+sudo alpine-chroot-install -d /alpine -p build-base -p cmake
+/alpine/enter-chroot -u $USER ./build
+.EE
