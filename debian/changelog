@@ -1,5 +1,6 @@
-alpine-chroot-install (0.13.3-1) UNRELEASED; urgency=medium
+alpine-chroot-install (0.13.3-1) unstable; urgency=medium
 
   * Initial release. (Closes: #1012050)
+  * Remove new-user-unfriedly default of installing to /alpine
 
- -- Adam Borowski <kilobyte@angband.pl>  Wed, 13 Jul 2022 00:21:29 +0200
+ -- Adam Borowski <kilobyte@angband.pl>  Wed, 13 Jul 2022 21:51:30 +0200
