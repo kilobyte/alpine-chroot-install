@@ -290,7 +290,7 @@ done
 : ${ALPINE_PACKAGES:="build-base ca-certificates ssl_client"}
 : ${ARCH:=}
 : ${BIND_DIR:=}
-: ${CHROOT_DIR:="/alpine"}
+: ${CHROOT_DIR:=}
 : ${CHROOT_KEEP_VARS:="ARCH CI QEMU_EMULATOR TRAVIS_.*"}
 : ${EXTRA_REPOS:=}
 : ${TEMP_DIR:=$(mktemp -d || echo /tmp/alpine)}
@@ -305,6 +305,10 @@ esac
 
 if [ "$(id -u)" -ne 0 ]; then
 	die 'This script must be run as root!'
+fi
+
+if [ -z "$CHROOT_DIR" ]; then
+	die 'Please specify where to install to (such as -d /alpine)'
 fi
 
 mkdir -p "$CHROOT_DIR"
