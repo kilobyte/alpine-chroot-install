@@ -1,0 +1,26 @@
+Source: alpine-chroot-install
+Section: otherosfs
+Priority: optional
+Maintainer: Adam Borowski <kilobyte@angband.pl>
+Rules-Requires-Root: no
+Build-Depends:
+	debhelper-compat (= 13),
+Standards-Version: 4.6.1
+Homepage: https://github.com/alpinelinux/alpine-chroot-install/
+Vcs-Browser: https://github.com/kilobyte/alpine-chroot-install
+Vcs-Git: https://github.com/kilobyte/alpine-chroot-install.git
+
+Package: alpine-chroot-install
+Architecture: all
+Depends:
+	${misc:Depends},
+	curl | wget,
+Suggests:
+	binfmt-support,
+	qemu-user-static,
+Description: bootstrap Alpine Linux into a chroot
+ This script builds an Alpine Linux chroot, fetching packages from a network
+ mirror.  The installed system is quite minimal, but contains enough to let
+ you install whatever you need using "apk".
+ .
+ In other words, it's alpine's debootstrap.
