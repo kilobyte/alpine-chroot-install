@@ -1,3 +1,9 @@
+alpine-chroot-install (0.13.3-2) unstable; urgency=medium
+
+  * Add a missing slash in an example.
+
+ -- Adam Borowski <kilobyte@angband.pl>  Sat, 23 Jul 2022 21:21:09 +0200
+
 alpine-chroot-install (0.13.3-1) unstable; urgency=medium
 
   * Initial release. (Closes: #1012050)
