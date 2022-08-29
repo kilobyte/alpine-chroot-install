@@ -12,6 +12,7 @@ Vcs-Git: https://github.com/kilobyte/alpine-chroot-install.git
 
 Package: alpine-chroot-install
 Architecture: all
+Multi-Arch: foreign
 Depends:
 	${misc:Depends},
 	curl | wget,
