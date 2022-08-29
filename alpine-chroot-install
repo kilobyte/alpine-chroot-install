@@ -78,8 +78,8 @@ set -eu
 
 #=======================  C o n s t a n t s  =======================#
 
-: ${APK_TOOLS_URI:="https://gitlab.alpinelinux.org/api/v4/projects/5/packages/generic/v2.12.9/x86_64/apk.static"}
-: ${APK_TOOLS_SHA256:="5176da3d4c41f12a08b82809aca8e7e2e383b7930979651b8958eca219815af5"}
+: ${APK_TOOLS_URI:="https://gitlab.alpinelinux.org/api/v4/projects/5/packages/generic/v2.12.10/x86_64/apk.static"}
+: ${APK_TOOLS_SHA256:="d7506bb11327b337960910daffed75aa289d8bb350feab624c52965be82ceae8"}
 
 # Alpine APK keys for packages verification.
 ALPINE_KEYS='
@@ -102,7 +102,7 @@ ALPINE_KEYS='
 '
 
 # Version of alpine-chroot-install script.
-VERSION='0.13.3'
+VERSION='0.14.0'
 
 
 #=======================  F u n c t i o n s  =======================#
@@ -248,7 +248,8 @@ apt_install() {
 		apt-get update
 		APT_UPDATED=yes
 	fi
-	apt-get install -y --no-install-recommends "$@"
+	# -o=Dpkg::Use-Pty=0 - get rid of annoying "Reading database ..." messages.
+	apt-get install -y -o=Dpkg::Use-Pty=0 --no-install-recommends "$@"
 }
 
 # Installs and enables binfmt-support on Debian/Ubuntu host.
@@ -340,7 +341,8 @@ fi
 einfo 'Downloading static apk-tools'
 
 download_file "$APK_TOOLS_URI" "$APK_TOOLS_SHA256" "$TEMP_DIR"
-chmod +x "$TEMP_DIR"/apk.static
+APK="$TEMP_DIR/apk.static"
+chmod +x "$APK"
 
 
 einfo "Installing Alpine Linux $ALPINE_BRANCH ($ARCH) into chroot"
@@ -358,10 +360,20 @@ dump_alpine_keys etc/apk/keys/
 
 cp /etc/resolv.conf etc/resolv.conf
 
-"$TEMP_DIR"/apk.static \
+"$APK" add \
 	--root . --update-cache --initdb --no-progress \
 	${ARCH:+--arch $ARCH} \
-	add alpine-base
+	alpine-baselayout apk-tools busybox busybox-suid musl-utils
+
+if "$APK" info --root . --no-progress --quiet alpine-release >/dev/null; then
+	"$APK" add --root . --no-progress alpine-release
+else
+	# In Alpine <3.17, this package contains /etc/os-release,
+	# /etc/alpine-release and /etc/issue, but we don't wanna install all
+	# its dependencies (e.g. openrc).
+	"$APK" fetch --root . --no-progress --stdout alpine-base \
+		| tar -xz etc
+fi
 
 gen_chroot_script > enter-chroot
 gen_destroy_script > destroy
@@ -383,7 +395,7 @@ if [ -L /dev/shm ] && [ -d /run/shm ]; then
 	mount --make-private run/shm
 fi
 
-if [ "$BIND_DIR" ]; then
+if [ -d "$BIND_DIR" ]; then
 	mkdir -p "${CHROOT_DIR}${BIND_DIR}"
 	mount -v --bind "$BIND_DIR" "${CHROOT_DIR}${BIND_DIR}"
 	mount --make-private "${CHROOT_DIR}${BIND_DIR}"
