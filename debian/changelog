@@ -1,3 +1,10 @@
+alpine-chroot-install (0.14.0-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Multi-Arch: foreign.
+
+ -- Adam Borowski <kilobyte@angband.pl>  Sun, 04 Sep 2022 01:17:36 +0200
+
 alpine-chroot-install (0.13.3-2) unstable; urgency=medium
 
   * Add a missing slash in an example.
