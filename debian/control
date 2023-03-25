@@ -5,7 +5,7 @@ Maintainer: Adam Borowski <kilobyte@angband.pl>
 Rules-Requires-Root: no
 Build-Depends:
 	debhelper-compat (= 13),
-Standards-Version: 4.6.1
+Standards-Version: 4.6.2
 Homepage: https://github.com/alpinelinux/alpine-chroot-install/
 Vcs-Browser: https://github.com/kilobyte/alpine-chroot-install
 Vcs-Git: https://github.com/kilobyte/alpine-chroot-install.git
